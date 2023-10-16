@@ -48,7 +48,7 @@ function App() {
     },
   ]);
 
-  const defaultFilters = {
+  const defaultParams = {
     pageIndex: 0,
     pageSize: 10,
   };
@@ -59,43 +59,32 @@ function App() {
     const pageSize = urlParams.get("pageSize");
     if (!pageIndex || !pageSize)
       window.location.replace(
-        `?pageIndex=${defaultFilters.pageIndex}&pageSize=${defaultFilters.pageSize}`
+        `?pageIndex=${defaultParams.pageIndex}&pageSize=${defaultParams.pageSize}`
       );
   }, []);
 
-  const [{ pageIndex, pageSize }, setPagination] =
-    React.useState<PaginationState>({
-      pageIndex: 0,
-      pageSize: 10,
-    });
-
-  const fetchDataOptions = {
-    pageIndex,
-    pageSize,
+  const params = {
+    pageIndex:
+      Number(new URLSearchParams(window.location.search).get("pageIndex")) ||
+      defaultParams.pageIndex,
+    pageSize: Number(
+      new URLSearchParams(window.location.search).get("pageSize") ||
+        defaultParams.pageSize
+    ),
   };
 
-  const dataQuery = useQuery(
-    ["data", fetchDataOptions],
-    () => fetchData(fetchDataOptions),
-    { keepPreviousData: true }
-  );
+  const dataQuery = useQuery(["data", params], () => fetchData(params), {
+    keepPreviousData: true,
+  });
 
   const defaultData = React.useMemo(() => [], []);
-
-  const pagination = React.useMemo(
-    () => ({
-      pageIndex,
-      pageSize,
-    }),
-    [pageIndex, pageSize]
-  );
 
   const table = useReactTable({
     data: dataQuery.data?.rows ?? defaultData,
     columns,
     pageCount: dataQuery.data?.pageCount ?? -1,
-    state: { pagination },
-    onPaginationChange: setPagination,
+    state: { pagination: params },
+    onPaginationChange: () => {},
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
     debugTable: true,
@@ -211,7 +200,7 @@ function App() {
       <div>
         <button onClick={() => rerender()}>Force Rerender</button>
       </div>
-      <pre>{JSON.stringify(pagination, null, 2)}</pre>
+      <pre>{JSON.stringify(params, null, 2)}</pre>
     </div>
   );
 }
