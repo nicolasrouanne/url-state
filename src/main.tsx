@@ -53,7 +53,15 @@ function App() {
     pageSize: 10,
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const pageIndex = urlParams.get("pageIndex");
+    const pageSize = urlParams.get("pageSize");
+    if (!pageIndex || !pageSize)
+      window.location.replace(
+        `?pageIndex=${defaultFilters.pageIndex}&pageSize=${defaultFilters.pageSize}`
+      );
+  }, []);
 
   const [{ pageIndex, pageSize }, setPagination] =
     React.useState<PaginationState>({
@@ -69,7 +77,7 @@ function App() {
   const dataQuery = useQuery(
     ["data", fetchDataOptions],
     () => fetchData(fetchDataOptions),
-    { keepPreviousData: true },
+    { keepPreviousData: true }
   );
 
   const defaultData = React.useMemo(() => [], []);
@@ -79,7 +87,7 @@ function App() {
       pageIndex,
       pageSize,
     }),
-    [pageIndex, pageSize],
+    [pageIndex, pageSize]
   );
 
   const table = useReactTable({
@@ -107,7 +115,7 @@ function App() {
                       <div>
                         {flexRender(
                           header.column.columnDef.header,
-                          header.getContext(),
+                          header.getContext()
                         )}
                       </div>
                     )}
@@ -126,7 +134,7 @@ function App() {
                     <td key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext(),
+                        cell.getContext()
                       )}
                     </td>
                   );
@@ -216,5 +224,5 @@ ReactDOM.createRoot(rootElement).render(
     <QueryClientProvider client={queryClient}>
       <App />
     </QueryClientProvider>
-  </React.StrictMode>,
+  </React.StrictMode>
 );
