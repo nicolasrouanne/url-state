@@ -83,7 +83,14 @@ function App() {
     columns,
     pageCount: dataQuery.data?.pageCount ?? -1,
     state: { pagination: params },
-    onPaginationChange: () => {},
+    onPaginationChange: (updater) => {
+      if (typeof updater === "function") {
+        const newParams = { ...params, ...updater(params) };
+        window.location.replace(
+          `?pageIndex=${newParams.pageIndex}&pageSize=${newParams.pageSize}`
+        );
+      }
+    },
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
     debugTable: true,
