@@ -1,9 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useReducer } from "react";
 import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider, useQuery } from "react-query";
 
 import {
-  PaginationState,
   useReactTable,
   getCoreRowModel,
   ColumnDef,
@@ -15,9 +14,9 @@ import "./index.css";
 const queryClient = new QueryClient();
 
 function App() {
-  const rerender = React.useReducer(() => ({}), {})[1];
+  const rerender = useReducer(() => ({}), {})[1];
 
-  const columns = React.useMemo<ColumnDef<Person>[]>(() => [
+  const columns = useMemo<ColumnDef<Person>[]>(() => [
     {
       accessorKey: "firstName",
       cell: (info) => info.getValue(),
@@ -77,7 +76,7 @@ function App() {
     keepPreviousData: true,
   });
 
-  const defaultData = React.useMemo(() => [], []);
+  const defaultData = useMemo(() => [], []);
 
   const table = useReactTable({
     data: dataQuery.data?.rows ?? defaultData,
